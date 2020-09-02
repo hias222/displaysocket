@@ -40,7 +40,6 @@ var running = false;
 var mqtt = require('mqtt')
 
 var client = mqtt.connect(mqtt_host, settings)
-//var client = mqtt.connect('mqtt://localhost', settings)
 
 const app = express();
 
@@ -49,7 +48,7 @@ app.use(cors());
 app.options('*', cors());
 
 const server = http.createServer(app);
-const io = socketIo(server); // < Interesting!
+const io = socketIo(server, { path: '/ws/socket.io'}); // < Interesting!
 
 io.origins('*:*') // for latest version
 
