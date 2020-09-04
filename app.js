@@ -5,6 +5,8 @@ const socketIo = require("socket.io");
 const port = process.env.PORT || 4001;
 const index = require("./routes/index");
 
+require('dotenv').config();
+
 const senddatahub = require("./outgoing/senddatahub")
 
 const topic_name = "mainchannel"
