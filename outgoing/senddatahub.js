@@ -1,12 +1,17 @@
 global.fetch = require("node-fetch");
 
+var get_backend_port = process.env.REACT_APP_BACKEND_PORT === undefined ? "3000" : process.env.REACT_APP_BACKEND_PORT
+var get_backend_url = process.env.REACT_APP_BACKEND_DIRECT === "true" ? "http://localhost:" + get_backend_port : process.env.REACT_APP_DATHUB
+var backend_url = get_backend_url === undefined ? "http://localhost:"  + get_backend_port : get_backend_url
+
+
 const sendHeat = (jsondaata) => {
     console.log("sendheat to api/heat/add")
     let responsedata = "OK"
 
     console.log(JSON.stringify(jsondaata))
 
-    fetch('http://localhost:3000/api/heat/add', {
+    fetch(backend_url + '/api/heat/add', {
         method: 'POST', // or 'PUT'
         headers: {
             'Content-Type': 'application/json'
