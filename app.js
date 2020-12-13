@@ -187,10 +187,6 @@ async function sendBaseData(socket) {
 
       socket.emit("FromAPI", JSON.stringify(headermessage));
 
-      for (let lane of lanemessages) {
-        socket.emit("FromAPI", JSON.stringify(lane));
-      }
-
       if (start.type === "message" || start.type === "clock") {
         var timediff = Date.now() - timestart;
         var newtime = Math.floor((timestart + timediff) / 1000);
@@ -209,6 +205,11 @@ async function sendBaseData(socket) {
           console.log("send race maybe " + timediff)
         }
       }
+
+      for (let lane of lanemessages) {
+        socket.emit("FromAPI", JSON.stringify(lane));
+      }
+
     }
     //console.log("FromAPI " + JSON.stringify(newmessage))
   } catch (error) {
