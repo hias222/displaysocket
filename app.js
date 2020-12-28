@@ -2,16 +2,14 @@ const express = require("express");
 var cors = require('cors');
 const http = require("http");
 const socketIo = require("socket.io");
-const port = process.env.PORT || 4001;
-const index = require("./routes/index");
 
 require('dotenv').config();
 
+const port = process.env.PORT || 4001;
+const index = require("./routes/index");
 const senddatahub = require("./outgoing/senddatahub")
-
 const topic_name = "mainchannel"
 const mqtt_host = "mqtt://localhost"
-
 const today = new Date();
 
 const staticbasemessage = today.getDate() + "." + today.getMonth() + "." + today.getFullYear() + " \\n \
