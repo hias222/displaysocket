@@ -50,7 +50,13 @@ app.options('*', cors());
 const server = http.createServer(app);
 const io = socketIo(server, { path: '/ws/socket.io'}); // < Interesting!
 
-io.origins('*:*') // for latest version
+// I dont know it !!!
+//io.origins('*:*') // for latest version
+
+console.log(' ')
+console.log('using /ws/socket.io on port ' + port)
+console.log('check io.origins on connection issues ')
+console.log(' ')
 
 io.on("connection", socket => {
   console.log('websocket backend Subscribing to ' + mqtt_host);
