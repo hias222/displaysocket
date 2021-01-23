@@ -9,7 +9,7 @@ const port = process.env.PORT || 4001;
 const index = require("./routes/index");
 const senddatahub = require("./outgoing/senddatahub")
 const topic_name = "mainchannel"
-const mqtt_host = "mqtt://localhost"
+const mqtt_host = process.env.MQTT_URL || "mqtt://localhost"
 const today = new Date();
 
 const staticbasemessage = today.getDate() + "." + today.getMonth() + "." + today.getFullYear() + " \\n \
@@ -54,7 +54,9 @@ const io = socketIo(server, { path: '/ws/socket.io'}); // < Interesting!
 //io.origins('*:*') // for latest version
 
 console.log(' ')
-console.log('using /ws/socket.io on port ' + port)
+console.log('Source MQQT Server:     ' + mqtt_host)
+console.log('Source MQQT Topic :     ' + topic_name)
+console.log('Websockets on /ws/socket.io on port ' + port)
 console.log('check io.origins on connection issues ')
 console.log(' ')
 
