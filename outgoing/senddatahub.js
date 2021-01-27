@@ -3,8 +3,7 @@ global.fetch = require("node-fetch");
 var use_backuend_url = process.env.APP_USE_DATAHUB === "true" ? true : false
 
 var get_backend_port = process.env.APP_BACKEND_PORT === undefined ? "3001" : process.env.APP_BACKEND_PORT
-var get_backend_url = process.env.APP_BACKEND_DIRECT === "true" ? "http://localhost:" + get_backend_port : process.env.APP_DATHUB
-var backend_url = get_backend_url === undefined ? "http://localhost:" + get_backend_port : get_backend_url
+var backend_url = process.env.APP_DATHUB === undefined ? "http://localhost:" + get_backend_port : process.env.APP_DATHUB
 
 console.log("datahub url:     " + backend_url)
 console.log("datahub enabled: " + use_backuend_url)
