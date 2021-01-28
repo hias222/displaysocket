@@ -15,7 +15,7 @@ creats websocket connections for frontend
 docker pull eclipse-mosquitto:2 
 
 # use hostname -> put in hostname in mosquitto.conf
-# USer homes on MAc not working
+# USer homes for volumes on MAc not working
 
 docker run -d -p 1883:1883 -p 9001:9001 --name mqtt --hostname mqtt --rm -v /tmp/mosquitto:/mosquitto/config eclipse-mosquitto:2
 
