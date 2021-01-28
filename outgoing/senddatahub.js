@@ -13,7 +13,7 @@ const sendHeat = (jsondaata) => {
         console.log('datahub is off')
     }
     if (use_backuend_url) {
-        console.log('sendheat to ' + backend_url + '/api/heat/add')
+        console.log('sendheat to ' + backend_url + '/datahub/internal/add')
         let responsedata = "OK"
 
         console.log(JSON.stringify(jsondaata))
