@@ -19,6 +19,8 @@ docker pull eclipse-mosquitto:2
 
 docker run -d -p 1883:1883 -p 9001:9001 --name mqtt --hostname mqtt --rm -v /tmp/mosquitto:/mosquitto/config eclipse-mosquitto:2
 
+docker run -p 1883:1883 -p 9001:9001 --name mqtt --hostname mqtt --rm -v /tmp/mosquitto:/mosquitto/config eclipse-mosquitto:2
+
 # -v mosquitto.conf:/mosquitto/config/mosquitto.conf
 
 ```
@@ -61,6 +63,9 @@ docker images
 ## Docker hub
 
 ```bash
+
+docker build -t displaysocket .
+
 docker login
 
 docker tag displaysocket hias222/displaysocket:0.1.0
