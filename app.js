@@ -5,32 +5,20 @@ const socketIo = require("socket.io");
 
 require('dotenv').config();
 
+const mqttConfig = require("./connect/mqttSettings");
+const connectFactory = require("./connect/connectFactory");
+
 const port = process.env.PORT || 4001;
 const index = require("./routes/index");
 const senddatahub = require("./outgoing/senddatahub")
 const topic_name = "mainchannel"
-const mqtt_host = process.env.MQTT_URL || "mqtt://localhost"
+//const mqtt_host = process.env.MQTT_URL || "mqtt://localhost"
 const today = new Date();
 
 const staticbasemessage = today.getDate() + "." + today.getMonth() + "." + today.getFullYear() + " \\n \
                           Live Timing\\n \
                           \\n \
                           "
-
-
-var mqtt_username_local = typeof process.env.MQTT_USERNAME_LOCAL !== "undefined" ? process.env.MQTT_USERNAME_LOCAL : 'mqtt';
-var mqtt_password_local = typeof process.env.MQTT_PASSWORD_LOCAL !== "undefined" ? process.env.MQTT_PASSWORD_LOCAL : 'mqtt';
-
-var debug = process.env.MQTT_DEBUG === 'true' ? true : false; 
-
-var settings = {
-  keepalive: 2000,
-  username: mqtt_username_local,
-  password: mqtt_password_local,
-  clientId: 'display_' + Math.random().toString(16).substr(2, 8)
-}
-
-if (debug) console.log(settings)
 
 var lanemessages = []
 
@@ -48,10 +36,8 @@ var laststart = Date.now();
 var timestart = Date.now();
 var running = false;
 
-var mqtt = require('mqtt')
-
-var client = mqtt.connect(mqtt_host, settings)
-
+var client = connectFactory.createConnect("Mqtt", mqttConfig.mqttDestination, mqttConfig.mqttSettings);
+    
 const app = express();
 
 app.use(index);
@@ -64,19 +50,13 @@ const io = socketIo(server, { path: '/ws/socket.io'}); // < Interesting!
 // I dont know it !!!
 //io.origins('*:*') // for latest version
 
-console.log(' ')
-console.log('Source MQQT Server:     ' + mqtt_host)
 console.log('Source MQQT Topic :     ' + topic_name)
 console.log('Websockets on /ws/socket.io on port ' + port)
 console.log('check io.origins on connection issues ')
-console.log(' ')
 
 io.on("connection", socket => {
-  console.log('websocket backend Subscribing to ' + mqtt_host);
-  //client.subscribe("topic_name");
   sendBaseData(socket)
   socket.on("disconnect", () => console.log("websocket backend Client disconnected"));
-
   socket.on("error", (error) => {
     console.log(error)
   })
@@ -102,7 +82,7 @@ function checkMQTT() {
 
 setInterval(checkMQTT, 1000);
 
-client.disconnected
+//client.disconnected
 
 client.on('message', function (topic, message) {
   //console.log('websocket backend', topic, message.toString());
