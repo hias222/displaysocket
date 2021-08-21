@@ -2,6 +2,8 @@ const Mqtt = require('mqtt');
 
 const AWS = require('aws-iot-device-sdk/device')
 
+const SQS = require('./sqsConnect')
+
 /*
 node node_modules/aws-iot-device-sdk/examples/device-example.js 
 --host-name=a101aihtfyydn6-ats.iot.eu-central-1.amazonaws.com 
@@ -11,10 +13,8 @@ node node_modules/aws-iot-device-sdk/examples/device-example.js
 --client-id=sdk-nodejs-d9122ba1-c0df-4470-a82f-6cd8b7c04e21
 */
 
-const connect = { Mqtt, AWS };
-
+const connect = { Mqtt, AWS, SQS };
 var mqtttopic = typeof process.env.DEST_MQTT_TOPIC !== "undefined" ? process.env.DEST_MQTT_TOPIC : 'mainchannel';
-
 
 module.exports = {
     createConnect(type, mqttdestination, settings) {

@@ -36,8 +36,8 @@ var laststart = Date.now();
 var timestart = Date.now();
 var running = false;
 
-var client = connectFactory.createConnect("Mqtt", mqttConfig.mqttDestination, mqttConfig.mqttSettings);
-    
+var client = connectFactory.createConnect("SQS", mqttConfig.mqttDestination, mqttConfig.mqttSettings);
+
 const app = express();
 
 app.use(index);
@@ -45,7 +45,7 @@ app.use(cors());
 app.options('*', cors());
 
 const server = http.createServer(app);
-const io = socketIo(server, { path: '/ws/socket.io'}); // < Interesting!
+const io = socketIo(server, { path: '/ws/socket.io' }); // < Interesting!
 
 // I dont know it !!!
 //io.origins('*:*') // for latest version
