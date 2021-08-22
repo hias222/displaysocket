@@ -5,6 +5,10 @@ AWS.config.update({ region: 'eu-central-1' });
 
 const EventEmitter = require('events');
 
+const SQSMessageHandler = require('./utils/sqsmessqges')
+
+const timer = ms => new Promise(res => setTimeout(res, ms))
+
 // Create an SQS service object
 var sqs = new AWS.SQS({ apiVersion: '2012-11-05' });
 var queueURL = "https://sqs.eu-central-1.amazonaws.com/654384432543/datamapping";
@@ -18,7 +22,7 @@ var params = {
   ],
   QueueUrl: queueURL,
   VisibilityTimeout: 0,
-  WaitTimeSeconds: 10
+  WaitTimeSeconds: 20
 };
 
 class SQSEmitter extends EventEmitter {
@@ -26,6 +30,9 @@ class SQSEmitter extends EventEmitter {
     super();
 
     this.SQSconnected = false;
+    this.sendMessage = this.sendMessage.bind(this);
+    this.getSQSMessage = this.getSQSMessage.bind(this);
+    this.getSQSMessages = this.getSQSMessages.bind(this);
   }
 
   connect(destination, settings) {
@@ -40,38 +47,53 @@ class SQSEmitter extends EventEmitter {
 
   subscribe() {
     console.log('<sqsConnect> start subscribe')
-    this.startSQS()
+    //this.getSQSMessage()
+    this.getSQSMessages()
   }
 
   connected() {
     return this.SQSconnected
   }
 
-  startSQS() {
-    sqs.receiveMessage(params, function (err, data) {
-      console.log('SQS debug')
-      //myEmitter.emit('connect');
-      if (err) {
-        this.SQSconnected = false
-        console.log("Receive Error", err);
-      } else if (data.Messages) {
-        this.SQSconnected = true
-        console.log(data.Messages)
-        myEmitter.emit('event');
-        var deleteParams = {
-          QueueUrl: queueURL,
-          ReceiptHandle: data.Messages[0].ReceiptHandle
-        };
-        sqs.deleteMessage(deleteParams, function (err, data) {
-          if (err) {
-            console.log("Delete Error", err);
-          } else {
-            console.log("Message Deleted", data);
-          }
-        });
-      }
+  sendMessage(message) {
+    this.emit('message', 'SQS', JSON.stringify(message));
+  }
+
+  async getSQSMessages() {
+    while (true) {
+      await this.getSQSMessage();
+    }
+  }
+
+  async getSQSMessage() {
+    // resolve('resolved');
+    // await timer(1000)
+    return new Promise(resolve => {
+      var self = this;
+      sqs.receiveMessage(params, function (err, data) {
+        if (err) {
+          this.SQSconnected = false
+          console.log("Receive Error", err);
+          resolve('resolved');
+        } else if (data.Messages) {
+          this.SQSconnected = true
+          var newMessage = SQSMessageHandler(data.Messages)
+          self.sendMessage(newMessage)
+          var deleteParams = {
+            QueueUrl: queueURL,
+            ReceiptHandle: data.Messages[0].ReceiptHandle
+          };
+          sqs.deleteMessage(deleteParams, function (err, data) {
+            if (err) {
+              console.log("Delete Error", err);
+            }
+          });
+          resolve('resolved');
+        }
+      });
     });
   }
+
 }
 
 const myEmitter = new SQSEmitter();

@@ -100,7 +100,7 @@ client.on('message', function (topic, message) {
 function storeBaseData(message) {
   try {
     var jsonmessage = JSON.parse(message)
-    //console.log(jsonmessage.type)
+    console.log('Store Type: ' + jsonmessage.type)
     if (jsonmessage.type == "header") {
       //console.log("new header " + JSON.stringify(jsonmessage))
       headermessage = jsonmessage
