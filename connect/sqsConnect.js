@@ -1,4 +1,5 @@
 // Load the AWS SDK for Node.js
+const { rejects } = require('assert');
 var AWS = require('aws-sdk');
 // Set the region
 AWS.config.update({ region: 'eu-central-1' });
@@ -68,13 +69,13 @@ class SQSEmitter extends EventEmitter {
   async getSQSMessage() {
     // resolve('resolved');
     // await timer(1000)
-    return new Promise(resolve => {
+    return new Promise(resolve, reject => {
       var self = this;
       sqs.receiveMessage(params, function (err, data) {
         if (err) {
           this.SQSconnected = false
           console.log("Receive Error", err);
-          resolve('resolved');
+          reject(err);
         } else if (data.Messages) {
           this.SQSconnected = true
           var newMessage = SQSMessageHandler(data.Messages)
@@ -88,6 +89,9 @@ class SQSEmitter extends EventEmitter {
               console.log("Delete Error", err);
             }
           });
+          resolve('resolved');
+        } else {
+          console.log('no data')
           resolve('resolved');
         }
       });
