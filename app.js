@@ -15,11 +15,13 @@ const topic_name = "mainchannel"
 //const mqtt_host = process.env.MQTT_URL || "mqtt://localhost"
 const today = new Date();
 
+const dstMqttMode = process.env.DEST_MQTT_MODE || "MQTT"
+const debug = process.env.MQTT_DEBUG === 'true' ? true : false; 
+
 const staticbasemessage = today.getDate() + "." + today.getMonth() + "." + today.getFullYear() + " \\n \
                           Live Timing\\n \
                           \\n \
                           "
-
 var lanemessages = []
 
 var headermessage = {
@@ -36,7 +38,7 @@ var laststart = Date.now();
 var timestart = Date.now();
 var running = false;
 
-var client = connectFactory.createConnect("SQS", mqttConfig.mqttDestination, mqttConfig.mqttSettings);
+var client = connectFactory.createConnect(dstMqttMode, mqttConfig.mqttDestination, mqttConfig.mqttSettings);
 
 const app = express();
 
@@ -50,9 +52,9 @@ const io = socketIo(server, { path: '/ws/socket.io' }); // < Interesting!
 // I dont know it !!!
 //io.origins('*:*') // for latest version
 
-console.log('Source MQQT Topic :     ' + topic_name)
-console.log('Websockets on /ws/socket.io on port ' + port)
-console.log('check io.origins on connection issues ')
+if (debug) console.log('<app> Source MQQT Topic:                    ' + topic_name)
+if (debug) console.log('<app> Websockets on /ws/socket.io on port:  ' + port)
+if (debug) console.log('<app> check io.origins on connection issues ')
 
 io.on("connection", socket => {
   sendBaseData(socket)
@@ -62,21 +64,21 @@ io.on("connection", socket => {
   })
 });
 
-server.listen(port, () => console.log(`websocket backend Listening on port ${port}`));
+server.listen(port, () => console.log(`<app> websocket backend Listening on port ${port}`));
 
 client.on('connect', function () {
-  console.log("websocket backend connected");
+  console.log("<app> websocket backend connected");
   client.subscribe(topic_name);
 });
 
 client.on('error', function () {
-  console.log("websocket backend error");
+  console.log("<app> websocket backend error");
   client.subscribe(topic_name);
 });
 
 function checkMQTT() {
   if (!client.connected) {
-    console.log("failure MQTT")
+    console.log("<app> failure MQTT")
   }
 }
 
@@ -92,7 +94,7 @@ client.on('message', function (topic, message) {
     // console.log("websocket backend send " + message.toString())
     // console.log("send heat ")
   } catch (error) {
-    console.error(`websocket backend Error emit : ${error.code}`);
+    console.error(`<app> websocket backend Error emit : ${error.code}`);
     console.error(error);
   }
 });
@@ -105,7 +107,7 @@ function storeBaseData(message) {
       //console.log("new header " + JSON.stringify(jsonmessage))
       headermessage = jsonmessage
       if (start.type === 'clock' || start.type === 'message') {
-        console.log("----------------- reset " + start.type)
+        console.log("<app> --> reset " + start.type)
         var recallmessage = "{\"type\":\"race\"}"
         start = JSON.parse(recallmessage)
       }

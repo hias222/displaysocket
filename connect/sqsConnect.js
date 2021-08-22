@@ -1,34 +1,27 @@
-// Load the AWS SDK for Node.js
-const { rejects } = require('assert');
+// Load the AWS SDK for Node.jss
 var AWS = require('aws-sdk');
 // Set the region
-AWS.config.update({ region: 'eu-central-1' });
+// export
+// AWS_ACCESS_KEY_ID
+// AWS_SECRET_ACCESS_KEY
+
+AWS.config.update({ 
+  region: 'eu-central-1'
+ });
+
+console.log(AWS.config)
 
 const EventEmitter = require('events');
 
 const SQSMessageHandler = require('./utils/sqsmessqges')
 
-const timer = ms => new Promise(res => setTimeout(res, ms))
-
 // Create an SQS service object
 var sqs = new AWS.SQS({ apiVersion: '2012-11-05' });
-var queueURL = "https://sqs.eu-central-1.amazonaws.com/654384432543/datamapping";
-var params = {
-  AttributeNames: [
-    "SentTimestamp"
-  ],
-  MaxNumberOfMessages: 1,
-  MessageAttributeNames: [
-    "All"
-  ],
-  QueueUrl: queueURL,
-  VisibilityTimeout: 0,
-  WaitTimeSeconds: 20
-};
-
 class SQSEmitter extends EventEmitter {
   constructor() {
     super();
+
+    this.params = {}
 
     this.SQSconnected = false;
     this.sendMessage = this.sendMessage.bind(this);
@@ -38,7 +31,8 @@ class SQSEmitter extends EventEmitter {
 
   connect(destination, settings) {
     let _this = this;
-    console.log('<sqsConnect> connect')
+    this.params = settings
+    console.log('<sqsConnect> connect ' + settings.QueueUrl)
     setTimeout(() => {
       // wait short to get the event
       _this.emit('connect', 'start');
@@ -69,19 +63,20 @@ class SQSEmitter extends EventEmitter {
   async getSQSMessage() {
     // resolve('resolved');
     // await timer(1000)
-    return new Promise(resolve, reject => {
+    return new Promise(resolve => {
       var self = this;
-      sqs.receiveMessage(params, function (err, data) {
+      sqs.receiveMessage(this.params, function (err, data) {
         if (err) {
-          this.SQSconnected = false
+          self.SQSconnected = false
           console.log("Receive Error", err);
-          reject(err);
+          resolve('OK');
         } else if (data.Messages) {
-          this.SQSconnected = true
+          self.SQSconnected = true
           var newMessage = SQSMessageHandler(data.Messages)
           self.sendMessage(newMessage)
+          
           var deleteParams = {
-            QueueUrl: queueURL,
+            QueueUrl: self.params.QueueUrl,
             ReceiptHandle: data.Messages[0].ReceiptHandle
           };
           sqs.deleteMessage(deleteParams, function (err, data) {
@@ -89,6 +84,7 @@ class SQSEmitter extends EventEmitter {
               console.log("Delete Error", err);
             }
           });
+          
           resolve('resolved');
         } else {
           console.log('no data')

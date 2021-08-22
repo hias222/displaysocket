@@ -1,8 +1,8 @@
-const Mqtt = require('mqtt');
-
+const MQTT = require('mqtt');
 const AWS = require('aws-iot-device-sdk/device')
-
 const SQS = require('./sqsConnect')
+
+var debug = process.env.MQTT_DEBUG === 'true' ? true : false;
 
 /*
 node node_modules/aws-iot-device-sdk/examples/device-example.js 
@@ -13,16 +13,15 @@ node node_modules/aws-iot-device-sdk/examples/device-example.js
 --client-id=sdk-nodejs-d9122ba1-c0df-4470-a82f-6cd8b7c04e21
 */
 
-const connect = { Mqtt, AWS, SQS };
-var mqtttopic = typeof process.env.DEST_MQTT_TOPIC !== "undefined" ? process.env.DEST_MQTT_TOPIC : 'mainchannel';
+const connect = { MQTT, AWS, SQS };
 
 module.exports = {
     createConnect(type, mqttdestination, settings) {
         const ConnectType = connect[type];
         //Mqtt.connect(attributes)
-        console.log('attributes: ')
-        console.log(mqttdestination)
-        console.log(settings)
+        if (debug) console.log('<receiver> connectFactory')
+        if (debug) console.log(mqttdestination)
+        if (debug) console.log(settings)
         if (type === 'AWS') {
             const AWSDevice = ConnectType({
                 host: 'a101aihtfyydn6-ats.iot.eu-central-1.amazonaws.com',
@@ -44,7 +43,6 @@ module.exports = {
                 debug: args.Debug
                 */
             });
-            //AWSDevice.subscribe(mqtttopic)
             return AWSDevice
         } else {
             return ConnectType.connect(mqttdestination, settings)

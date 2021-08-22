@@ -5,8 +5,8 @@ var use_backuend_url = process.env.APP_USE_DATAHUB === "true" ? true : false
 var get_backend_port = process.env.APP_BACKEND_PORT === undefined ? "3001" : process.env.APP_BACKEND_PORT
 var backend_url = process.env.APP_DATHUB === undefined ? "http://localhost:" + get_backend_port : process.env.APP_DATHUB
 
-console.log("datahub url:     " + backend_url + "/internal/add")
-console.log("datahub enabled: " + use_backuend_url)
+console.log("<sendHUB> datahub url:     " + backend_url + "/internal/add")
+console.log("<sendHUB> datahub enabled: " + use_backuend_url)
 
 const sendHeat = (jsondaata) => {
     if (!use_backuend_url){
