@@ -6,8 +6,9 @@ var mqtthost = typeof process.env.MQTT_URL !== "undefined" ? process.env.MQTT_UR
 var mqtt_username_local = typeof process.env.MQTT_USERNAME_LOCAL !== "undefined" ? process.env.MQTT_USERNAME_LOCAL : 'mqtt';
 var mqtt_password_local = typeof process.env.MQTT_PASSWORD_LOCAL !== "undefined" ? process.env.MQTT_PASSWORD_LOCAL : 'mqtt';
 var debug = process.env.MQTT_DEBUG === 'true' ? true : false; 
-var dstMqttMode = process.env.DEST_MQTT_MODE || "MQTT"
-var queueURL = process.env.QUEUE_URL || "https://sqs.eu-central-1.amazonaws.com/654384432543/datamapping";
+var dstMqttMode = process.env.SRC_MQTT_MODE || "MQTT"
+var srcMqttTopic = process.env.CHANNEL_DATA || "mainchannel"
+var queueURL = process.env.QUEUE_URL + '/' + srcMqttTopic  || "https://sqs.eu-central-1.amazonaws.com/654384432543" + '/' + srcMqttTopic;
 
 var settings = {
     keepalive: 2000,

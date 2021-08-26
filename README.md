@@ -65,7 +65,7 @@ docker images
 ```bash
 #AWS_ACCESS_KEY_ID
 # AWS_SECRET_ACCESS_KEY
-docker run --name=socket -p 4001:4001 --network=mqttnet --rm -e DEST_MQTT_MODE=SQS -e AWS_ACCESS_KEY_ID=123 -e AWS_SECRET_ACCESS_KEY=123 displaysocket
+docker run --name=socket -p 4001:4001 --rm -e SRC_MQTT_MODE=SQS -e AWS_ACCESS_KEY_ID=123 -e AWS_SECRET_ACCESS_KEY=123 displaysocket
 ```
 
 ## Docker hub

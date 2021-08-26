@@ -10,12 +10,10 @@ const connectFactory = require("./connect/connectFactory");
 
 const port = process.env.PORT || 4001;
 const index = require("./routes/index");
-const senddatahub = require("./outgoing/senddatahub")
-const topic_name = "mainchannel"
-//const mqtt_host = process.env.MQTT_URL || "mqtt://localhost"
+const topic_name = process.env.CHANNEL_DATA || "mainchannel"
 const today = new Date();
 
-const dstMqttMode = process.env.DEST_MQTT_MODE || "MQTT"
+const dstMqttMode = process.env.SRC_MQTT_MODE || "MQTT"
 const debug = process.env.MQTT_DEBUG === 'true' ? true : false; 
 
 const staticbasemessage = today.getDate() + "." + today.getMonth() + "." + today.getFullYear() + " \\n \
@@ -128,7 +126,6 @@ function storeBaseData(message) {
     if (jsonmessage.type == "stop") {
       // we send it to datahub
       running = false
-      sendDataHub();
       start = jsonmessage
     }
 
@@ -157,12 +154,6 @@ function storeBaseData(message) {
     console.log("<app.js> error")
     console.log(err)
   }
-}
-
-function sendDataHub() {
-  console.log("send to datahub")
-  var newmessage = { ...headermessage, lanes: lanemessages }
-  senddatahub.sendHeat(newmessage)
 }
 
 async function sendBaseData(socket) {
