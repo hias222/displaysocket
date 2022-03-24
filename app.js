@@ -14,7 +14,7 @@ const topic_name = process.env.CHANNEL_DATA || "mainchannel"
 const today = new Date();
 
 const dstMqttMode = process.env.SRC_MQTT_MODE || "MQTT"
-const debug = process.env.MQTT_DEBUG === 'true' ? true : false; 
+const debug = process.env.MQTT_DEBUG === 'true' ? true : false;
 
 const staticbasemessage = today.getDate() + "." + today.getMonth() + "." + today.getFullYear() + " \\n \
                           Live Timing\\n \
@@ -142,6 +142,10 @@ function storeBaseData(message) {
     if (jsonmessage.type == "clear") {
       console.log("clear lanes")
       lanemessages = []
+    }
+
+    if (jsonmessage.type == "result") {
+      start = jsonmessage
     }
 
     if (jsonmessage.type == "lane") {
