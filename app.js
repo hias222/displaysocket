@@ -42,7 +42,7 @@ const app = express();
 
 app.use(index);
 app.use(cors());
-app.options('*', cors());
+app.options('http://localhost:3000', cors());
 
 const server = http.createServer(app);
 const io = socketIo(server, { path: '/ws/socket.io' }); // < Interesting!
