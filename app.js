@@ -42,7 +42,7 @@ const app = express();
 
 app.use(index);
 app.use(cors());
-app.options('http://localhost:3000', cors());
+app.options('*', cors()); //preflight
 
 const server = http.createServer(app);
 const io = socketIo(server, { path: '/ws/socket.io' }); // < Interesting!
@@ -57,6 +57,7 @@ if (debug) console.log('<app> check io.origins on connection issues ')
 io.on("connection", socket => {
   sendBaseData(socket)
   socket.on("disconnect", () => console.log("websocket backend Client disconnected"));
+  socket.on("connect", (data) => console.log("websocket backend Client connected " + data.stringify()));
   socket.on("error", (error) => {
     console.log(error)
   })
